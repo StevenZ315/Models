@@ -46,22 +46,20 @@ class ElasticNet(LinearModel):
             iteration += 1
             self.gradient_descent(X, y)
 
-            if (iteration + 1) % 100 == 0:
-                print('Score for iteration %d is %.4f.' % (iteration, self.score_))
+            if (iteration + 1) % 10 == 0:
+                print('Iteration: %d\tTrain Score: %.4f' % (iteration, self.score_))
 
             # Early stopping.
             if self.score_ < self.tol:
                 print("Designed precision reached at iteration %d." % iteration)
 
-        print("Final solution coef: ", self.coef_.tolist())
-        print("Final solution intercept: %.4f" % self.intercept_)
         print("Final score: %.4f" % self.score_)
 
 
     def gradient_descent(self, X, y):
         n_samples, n_features = X.shape
 
-        y_pred = np.dot(X, self.coef_) + self.intercept_
+        y_pred = self.predict(X)
         residual = y_pred - y
         self.score_ = self.calc_score(residual)
 
@@ -70,7 +68,8 @@ class ElasticNet(LinearModel):
         d_intercept = (1/n_samples) * np.sum(residual)
 
         # L1 regulation.
-        l1_reg_coef = self.learning_rate * self.coef_ / np.abs(self.coef_)
+        coef_sign = np.sign(self.coef_)
+        l1_reg_coef = self.learning_rate * coef_sign
         bias_sign = 1 if self.intercept_ > 0 else -1
         l1_reg_intercept = self.learning_rate * self.intercept_ * bias_sign
 
@@ -113,3 +112,24 @@ class Ridge(ElasticNet):
     def __init__(self, **kwargs):
         super().__init__(l1_ratio=0, **kwargs)
 
+
+class LogisticRegression(ElasticNet):
+    def __init__(self, **kwargs):
+        super().__init__(learning_rate=0, **kwargs)
+
+    def _decision_function(self, X):
+        linear_model = np.dot(X, self.coef_.T) + self.intercept_
+        y_predicted = self.sigmoid(linear_model)
+        return (y_predicted > 0.5).astype(int)
+
+    def sigmoid(self, x):
+        return 1 / (1 + np.exp(-x))
+
+    def calc_score(self, residual):
+        """
+        Accuracy
+        Returns:
+
+        """
+        n_samples = len(residual)
+        return np.sum(residual == 0) / n_samples
