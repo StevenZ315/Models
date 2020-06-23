@@ -2,10 +2,8 @@ import numpy as np
 from sklearn.datasets import make_regression, make_classification, load_breast_cancer
 from sklearn.model_selection import train_test_split
 from linear_model import ElasticNet, Lasso, Ridge, LogisticRegression
+from naive_bayes import NaiveBayes
 import matplotlib.pyplot as plt
-
-print()
-
 
 
 def regressor_evalution(model):
@@ -22,7 +20,7 @@ def regressor_evalution(model):
     plt.show()
 
 def classifier_evaluation(model):
-    # X, y = make_classification(n_samples=200, n_features=4, n_classes=2, random_state=4)
+    # X, y = make_classification(n_samples=200, n_features=4, n_classes=2, random_state=42)
     X, y = load_breast_cancer(return_X_y=True)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
@@ -32,5 +30,5 @@ def classifier_evaluation(model):
     print("Final Test Score: %.4f" % test_score)
 
 
-classifier_evaluation(LogisticRegression())
+classifier_evaluation(NaiveBayes())
 
