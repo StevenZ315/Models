@@ -125,11 +125,3 @@ class LogisticRegression(ElasticNet):
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
 
-    def calc_score(self, residual):
-        """
-        Accuracy
-        Returns:
-
-        """
-        n_samples = len(residual)
-        return np.sum(residual == 0) / n_samples
